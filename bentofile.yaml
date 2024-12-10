@@ -1,0 +1,10 @@
+service: "service:svc"
+description: "BentoML Service for CLIP Image Vectorization"
+include:
+  - "*.py"
+  - "requirements.txt"
+python:
+  packages:
+    - transformers
+    - Pillow
+    - torch
