@@ -1,6 +1,8 @@
 # CLIP Image Vectorizer with BentoML
 
-This project provides an API for vectorizing images using OpenAI's CLIP model, packaged and served with BentoML. It allows you to send images to the API and receive a vector representation that encodes meaningful features of the image.
+This project provides an API for vectorizing images using OpenAI's CLIP model using BentoML. It allows you to send images to the API and receive a vector representation that encodes meaningful features of the image.
+
+The processor automatically resizes images to the model's expected input dimensions (e.g., 224x224 for this model) and normalizes pixel values.
 
 ## Features
 - Easy-to-use REST API for image vectorization.
@@ -8,9 +10,29 @@ This project provides an API for vectorizing images using OpenAI's CLIP model, p
 - Serves vectorization directly from BentoML.
 - Ready for local testing.
 
+## Supported Image Formats
+
+The service supports the following image formats based on Pillow's capabilities:
+
+| **Format**      | **File Extensions**         | **Description**                                                              |
+|------------------|-----------------------------|------------------------------------------------------------------------------|
+| **JPEG**        | `.jpg`, `.jpeg`, `.jpe`     | Common format with lossy compression, widely used for photographs.          |
+| **PNG**         | `.png`                      | Lossless compression, supports transparency (alpha channel).                |
+| **BMP**         | `.bmp`, `.dib`              | Bitmap image format, uncompressed.                                          |
+| **GIF**         | `.gif`                      | Supports animation and transparency; only the first frame is processed.     |
+| **TIFF**        | `.tiff`, `.tif`             | Flexible format supporting multiple layers and compression options.         |
+| **PPM**         | `.ppm`, `.pgm`, `.pbm`      | Portable Pixmap formats (NetPBM).                                           |
+| **ICO**         | `.ico`                      | Icon format, often used for application icons.                              |
+| **WEBP**        | `.webp`                     | Modern image format for web usage, supports both lossy and lossless modes.  |
+| **DDS**         | `.dds`                      | DirectDraw Surface, used for textures in graphics applications.             |
+| **TGA**         | `.tga`                      | Targa format, often used in video games and graphics.                       |
+| **HDR**         | `.hdr`                      | High Dynamic Range image format, used for realistic lighting.               |
+| **JPEG 2000**   | `.jp2`, `.j2k`, `.jpx`      | Advanced JPEG format with better compression.                               |
+
+
 ---
 
-## Install
+## Local install
 
 1. Create and activate a Python virtual environment:
    ```bash
