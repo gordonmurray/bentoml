@@ -1,0 +1,6 @@
+services:
+  bentoml_service:
+    image: clip_image_vectorizer:6ah4nmnx3o2hxmg4
+    ports:
+      - "3000:3000"
+
