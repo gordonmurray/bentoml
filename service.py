@@ -8,9 +8,9 @@ model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # Define the BentoML service
-svc = bentoml.Service(name="clip_image_vectorizer")
+vectorization = bentoml.Service(name="clip_image_vectorizer")
 
-@svc.api(input=Image(), output=JSON())
+@vectorization.api(input=Image(), output=JSON())
 def vectorize(image):
     """
     API endpoint to process an image and return its vector representation.
