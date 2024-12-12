@@ -81,26 +81,15 @@ The response will be a JSON object containing the image vector:
 ## Build a BentoML container image
 
 ```
-bentoml build --containerize
+# Use Bento to make a container image
+bentoml build
+
+# Re tag the image so it isn't random
+bentoml containerize clip_image_vectorizer:latest -t bentoml:latest
 ```
-
-### Get the tag name
-
-To start up a container you'll need the container tag that was just created. Use the following command to list tags:
-
-```
-bentoml list
-```
-
-You'll see an output similar to:
-
-```
- Tag                                     Size       Model Size  Creation Time
- clip_image_vectorizer:e4kep3vx56ru3mg4  18.44 KiB  0.00 B      2024-12-11 18:38:46
- ```
 
 ### Run the container
 
 ```
-docker run --rm -p 3000:3000 clip_image_vectorizer:TAG_NAME
+docker run --rm -p 3000:3000 bentoml:latest
 ```
