@@ -1,4 +1,4 @@
-# CLIP Image Vectorizer with BentoML
+# CLIP Image Vectorizer with BentoML and Milvus
 
 This project provides an API for vectorizing images using OpenAI's CLIP model using BentoML. It allows you to send images to the API and receive a vector representation that encodes meaningful features of the image.
 
@@ -32,7 +32,7 @@ The service supports the following image formats based on Pillow's capabilities:
 
 ---
 
-## Local install
+## Run BentoML locally
 
 1. Create and activate a Python virtual environment:
    ```bash
@@ -50,7 +50,7 @@ The service supports the following image formats based on Pillow's capabilities:
 
 1. Start the BentoML service:
    ```bash
-   bentoml serve service:svc
+   bentoml serve service:vectorization
    ```
 2. Verify the service is running:
    - Health Check:
@@ -64,12 +64,18 @@ The service supports the following image formats based on Pillow's capabilities:
 
 ---
 
+## Vectorize a string
+
+```
+curl -X POST -H "Content-Type: text/plain" -d "dog" http://127.0.0.1:3000/vectorize_text
+```
+
 ## Vectorize an Image
 
 Send an image to the API and receive a vector representation:
 
 ```bash
-curl -X POST -H "Content-Type: image/jpeg" --data-binary @image.jpg http://127.0.0.1:3000/vectorize
+curl -X POST -H "Content-Type: image/jpeg" --data-binary @image.jpg http://127.0.0.1:3000/vectorize_image
 ```
 
 The response will be a JSON object containing the image vector:
@@ -92,4 +98,57 @@ bentoml containerize clip_image_vectorizer:latest -t bentoml:latest
 
 ```
 docker run --rm -p 3000:3000 bentoml:latest
+```
+
+
+## BentoML and Milvus
+
+To run BentoML with Milvus use the docker compose file as follows:
+
+```
+docker compose up -d
+```
+
+
+### Check etcd is running
+
+```
+curl -X GET "http://127.0.0.1:2379/health"
+```
+
+### Check Milvus is running
+
+```
+curl -X GET "http://127.0.0.1:9091/api/v1/health"
+```
+
+### List Collections
+
+```
+curl -X GET "http://127.0.0.1:9091/api/v1/collections"
+```
+
+
+Use the Python scripts to popular Milvus and perform some searches.
+
+Create a folder called /images and add several jpg/jpeg files.
+
+Then run `python3 milvus_import.py` to create a Collection in Milvus and import the image vectors.
+
+To perform a search, update `milvus_search.py` with your search term and run the search: `python3 milvus_search.py`
+
+You'll see some results similar to below:
+
+Using L2 (Euclidean distance) for Search so the lower score the closer the match
+
+
+```
+Searching the Milvus collection...
+Search results:
+ID: 2BDA1D03-34A8-4839-954C-BEFCFB820FFB.jpg, Score: 171.7083740234375, Data: id: 2BDA1D03-34A8-4839-954C-BEFCFB820FFB.jpg, distance: 171.7083740234375, entity: {}
+ID: IMG_C3901DEE-6AC6-4C7C-98C2-E3399ED0B386.jpeg, Score: 174.3217010498047, Data: id: IMG_C3901DEE-6AC6-4C7C-98C2-E3399ED0B386.jpeg, distance: 174.3217010498047, entity: {}
+ID: 2F37C42E-92A8-4139-8219-47776AF16DB4.jpg, Score: 184.2227783203125, Data: id: 2F37C42E-92A8-4139-8219-47776AF16DB4.jpg, distance: 184.2227783203125, entity: {}
+ID: 5781EF01-25A6-4424-B926-9A5258C6D11C.jpg, Score: 194.461181640625, Data: id: 5781EF01-25A6-4424-B926-9A5258C6D11C.jpg, distance: 194.461181640625, entity: {}
+ID: IMG_90734CB6-2297-4BE3-B480-A677C603E46C.jpeg, Score: 195.9141845703125, Data: id: IMG_90734CB6-2297-4BE3-B480-A677C603E46C.jpeg, distance: 195.9141845703125, entity: {}
+Search completed.
 ```

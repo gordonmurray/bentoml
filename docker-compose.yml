@@ -1,6 +1,72 @@
 services:
   bentoml_service:
-    image: clip_image_vectorizer:6ah4nmnx3o2hxmg4
+    image: clip_image_text_vectorizer:n3767yn37oow7mg4
     ports:
       - "3000:3000"
+    networks:
+      - milvus-network
 
+  milvus:
+    image: milvusdb/milvus:v2.3.0
+    container_name: milvus
+    ports:
+      - "19530:19530"  # gRPC
+      - "9091:9091"    # REST
+    environment:
+      ETCD_USE_EMBED: "false"
+      ETCD_ENDPOINTS: etcd:2379
+      COMMON_STORAGETYPE: "local"
+      MINIO_ENDPOINTS: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      DATA_PATH: "/var/lib/milvus/data"
+      LOG_LEVEL: debug
+    deploy:
+      resources:
+        limits:
+          memory: 6g
+          cpus: "2.0"
+    depends_on:
+      - etcd
+      - minio
+    command: ["/milvus/bin/milvus", "run", "standalone"]
+    volumes:
+      - ./milvus-data:/var/lib/milvus
+    networks:
+      - milvus-network
+
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.0
+    container_name: etcd
+    ports:
+      - "2379:2379"
+    command: >
+      etcd
+      --advertise-client-urls=http://0.0.0.0:2379
+      --listen-client-urls=http://0.0.0.0:2379
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_DATA_DIR: /etcd-data
+    volumes:
+      - ./etcd-data:/etcd-data
+    networks:
+      - milvus-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - ./minio-data:/data
+    networks:
+      - milvus-network
+
+networks:
+  milvus-network:
+    driver: bridge

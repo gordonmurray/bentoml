@@ -11,7 +11,6 @@ env/
 venv/
 
 # BentoML-specific
-bentoml/
 bento/
 __pycache__/
 .cache/
@@ -31,3 +30,11 @@ models/
 *.temp
 *.tmp
 *~
+
+images/*
+
+etcd-data/
+
+milvus-data/
+
+minio-data/
